@@ -15,6 +15,7 @@ import re
 from collections import Counter
 import json
 import string
+import matplotlib.pyplot as plt
 
 #https://spacy.io/usage
 import spacy
@@ -69,10 +70,24 @@ def listHashtags(tweet):
     hashtags = re.findall(r'#\S+',tweet)
     return hashtags
 
+def removeNonFrench():
+    return
+
 def removeSparseTerms(dicti,nbTerms):
     return 
 
-
+def plotHistogram(features,nb,maxNbFeatures):
+    if len(features) > maxNbFeatures:
+        features= features[:maxNbFeatures]
+        nb = nb[:maxNbFeatures]
+        
+    y_pos = np.arange(max(nb)+1)
+    x_pos = np.arange(len(features))
+    plt.bar(x_pos,nb,width=0.5,align='center')
+    plt.xticks(x_pos,features)
+    plt.yticks(y_pos)
+    plt.xlabel('Nombre de fois que la feature a ete ecrite')
+    plt.show()
 #password :
 #pldac
 #root
@@ -80,7 +95,7 @@ cnx = mysql.connector.connect(user='root', password='root',
                               host='127.0.0.1',
                               database='pldac')
 cursor = cnx.cursor()
-cursor.execute("select text from tweets_0415_0423 LIMIT 3")
+cursor.execute("select text from tweets_0415_0423 LIMIT 30")
 rows = cursor.fetchall()
 tweets = pd.DataFrame(rows, columns=cursor.column_names)
 pd.options.display.max_colwidth = 1000
@@ -105,27 +120,31 @@ vectorizer = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',stop_words=list_s
 X = vectorizer.fit_transform(tweets['text'])
 print(vectorizer.get_feature_names())
 print(X.toarray())
-features = vectorizer.get_feature_names()
+features = np.array(vectorizer.get_feature_names())
+
 '''
 Histogramme des mots cles (les plus souvents utilisés)
 Addition des lignes de la matrice 
 ordre decroissant
 garder que les n mots les plus utilises
 '''
+print("NpSum")
 sum_rows = np.sum(X,axis=0)
-
+sum_rows = np.array(sum_rows)
+sum_rows = sum_rows.reshape(-1)
 sortOrder = (-sum_rows).argsort()
-print(sortOrder)
-print(sum_rows.shape)
-features = np.array(features)
-print(features.shape)
-sum_rows = np.reshape(sum_rows,features.shape)
-print(len(sum_rows[0]))
-sum_rows = sum_rows[sortOrder]
-features = features[sortOrder]
-print(sum_rows)
-print(features)
 
+nb = sum_rows[sortOrder]
+features = features[sortOrder]
+
+print("Histogramme")
+plotHistogram(features,nb,15  )
+
+maxNbFeatures = 100
+features= features[:maxNbFeatures]
+nb = nb[:maxNbFeatures]
+print(features)
+print(nb)
 '''
 Classifier tweets selon mots clés
 '''
