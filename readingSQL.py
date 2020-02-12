@@ -76,13 +76,13 @@ tweets['text'] = tweets['text'].apply(stem)
 
 print(tweets)
 
-vectorizer = CountVectorizer(token_pattern = '.*')
+vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(tweets['text'])
 print(vectorizer.get_feature_names())
 print(X.toarray())
 
 counter = Counter(tweets['text'])
-print(counter)
+print()
 
 cursor.close()
 cnx.close()
