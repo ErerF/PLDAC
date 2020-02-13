@@ -10,6 +10,8 @@ import pandas as pd
 import mysql.connector
 import sklearn as sk
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 import nltk
 import re
 from collections import Counter
@@ -24,13 +26,15 @@ nlp = spacy.load('fr_core_news_sm')
 
 from nltk.corpus import stopwords
 list_stopwords = stopwords.words('french')
-
+list_stopwords.extend(['rt','être','avoir','voter','faire'])
 '''
 Prends un tweet en entree de chaque fonction et le renvoie transforme
 
 Faire une fonction qui correspond au traitement qu on veut sur les tweets
 
 '''
+
+''' Debut methode de preprocessing '''
 def lowerCase(tweet):
     return tweet.lower()
 
@@ -52,8 +56,9 @@ def stem(tweet):
 
 # a tester pour comparer avec le stem, il met hashtag dans un token propre
 def lemmatize(tweet):
-    doc = nlp(tweet)
-    tweet =  " ".join(token.lemma_ for token in doc)
+    if len(tweet) > 0:
+        doc = nlp(tweet)
+        tweet =  " ".join(token.lemma_ for token in doc)
     return tweet
     
 
@@ -68,34 +73,60 @@ def removeNumbers(tweet):
 
 def listHashtags(tweet):
     hashtags = re.findall(r'#\S+',tweet)
-    return hashtags
+    return ' '.join(hashtags)
 
-def removeNonFrench():
-    return
+def stripAccents(tweet):
+    return tweet
+''' fin methode preprocessing'''
 
-def removeSparseTerms(dicti,nbTerms):
-    return 
+''' Quelle est la regle statistique pour eliminer les tweets etrangers deja ? '''
+def isFrench(tweet):
+    if re.match('csgo',tweet) or re.match('giveaway',tweet):
+        return false
+    return true
 
-def plotHistogram(features,nb,maxNbFeatures):
-    if len(features) > maxNbFeatures:
-        features= features[:maxNbFeatures]
-        nb = nb[:maxNbFeatures]
-        
-    y_pos = np.arange(max(nb)+1)
-    x_pos = np.arange(len(features))
+
+''' Inutile deja dans count Vectorizer => max_features
+def addStopWords(stopwordsInit,counter,nbMax):
+    listWords = counter.most_common()[nbMax:]
+    for w,f in listWords:
+        stopwordsInit.append(w)
+    return stopwordsInit
+'''
+
+def termFrequencyAll(tweets,tokenizer,list_stopwords):
+    countTerm = Counter()
+    for tweet in tweets:
+        terms = [t for t in tokenizer(tweet) if t not in list_stopwords]
+        countTerm.update(terms)
+    return countTerm
+
+def plotHistogram(counter,maxNbFeatures):
+    listTermsFreq = counter.most_common(maxNbFeatures)
+    features= list()
+    nb = list()
+    for k,v in listTermsFreq:
+        features.append(k)
+        nb.append(v)
+    
+    y_pos = np.linspace(0,max(nb)+1,10,dtype = int)
+    print(y_pos)
+    x_pos = np.linspace(0,len(features),maxNbFeatures)
+    print(x_pos)
     plt.bar(x_pos,nb,width=0.5,align='center')
     plt.xticks(x_pos,features)
     plt.yticks(y_pos)
     plt.xlabel('Nombre de fois que la feature a ete ecrite')
     plt.show()
+    
 #password :
 #pldac
 #root
-cnx = mysql.connector.connect(user='root', password='root',
+cnx = mysql.connector.connect(user='root', password='pldac',
                               host='127.0.0.1',
                               database='pldac')
 cursor = cnx.cursor()
-cursor.execute("select text from tweets_0415_0423 LIMIT 30")
+cursor.execute("select text from tweets_0415_0423 LIMIT 1000000")
 rows = cursor.fetchall()
 tweets = pd.DataFrame(rows, columns=cursor.column_names)
 pd.options.display.max_colwidth = 1000
@@ -106,29 +137,34 @@ tweets['text'] = tweets['text'].apply(removeMentions)
 tweets['text'] = tweets['text'].apply(removePunctuation)
 tweets['text'] = tweets['text'].apply(removeNumbers)
 tweets['text'] = tweets['text'].apply(lowerCase)
-tweets['text'] = tweets['text'].apply(stem)
+#tweets['text'] = tweets['text'].apply(stem)
+tweets['text'] = tweets['text'].apply(listHashtags)
+print("lemmatize")
 #tweets['text'] = tweets['text'].apply(lemmatize)
 
-
+        
 
 print(tweets)
 ''' (?u) = re.UNICODE ,\b = delimiteur d un mot
 la regex permet de garder aussi les hashtags dans le passage dans countVectorizer
 
 '''
-vectorizer = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',stop_words=list_stopwords)
-X = vectorizer.fit_transform(tweets['text'])
-print(vectorizer.get_feature_names())
-print(X.toarray())
-features = np.array(vectorizer.get_feature_names())
+maxFeatures = 15
+vectorizer = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',stop_words = list_stopwords,max_features = maxFeatures )
+
+tokenizer = vectorizer.build_tokenizer()
+
 
 '''
 Histogramme des mots cles (les plus souvents utilisés)
 Addition des lignes de la matrice 
 ordre decroissant
 garder que les n mots les plus utilises
-'''
+
+Trop lent :
 print("NpSum")
+features = np.array(vectorizer.get_feature_names())
+
 sum_rows = np.sum(X,axis=0)
 sum_rows = np.array(sum_rows)
 sum_rows = sum_rows.reshape(-1)
@@ -136,18 +172,30 @@ sortOrder = (-sum_rows).argsort()
 
 nb = sum_rows[sortOrder]
 features = features[sortOrder]
+'''
 
 print("Histogramme")
-plotHistogram(features,nb,15  )
+counter = termFrequencyAll(tweets['text'],tokenizer,list_stopwords)
+plotHistogram(counter,maxFeatures )
 
-maxNbFeatures = 100
-features= features[:maxNbFeatures]
-nb = nb[:maxNbFeatures]
-print(features)
-print(nb)
+
+#list_stopwords = addStopWords(list_stopwords, counter ,maxNbFeatures)
+
 '''
 Classifier tweets selon mots clés
+Ajouter à la liste des stop words, les mots considérés comme non importants
 '''
+countMatrix = vectorizer.fit_transform(tweets['text'])
+print(vectorizer.get_feature_names())
+print(countMatrix.toarray())
+
+tfidfMatrix = TfidfTransformer().fit_transform(countMatrix)
+print(tfidfMatrix.toarray())
+
+
+
+
+
 
 
 
