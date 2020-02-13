@@ -126,17 +126,17 @@ cnx = mysql.connector.connect(user='root', password='pldac',
                               host='127.0.0.1',
                               database='pldac')
 cursor = cnx.cursor()
-cursor.execute("select text from tweets_0415_0423 LIMIT 1000000")
+cursor.execute("select text from tweets_0415_0423 where lang ='fr' LIMIT 1000000")
 rows = cursor.fetchall()
 tweets = pd.DataFrame(rows, columns=cursor.column_names)
 pd.options.display.max_colwidth = 1000
 
 print(tweets)
-tweets['text'] = tweets['text'].apply(removeLinks)
-tweets['text'] = tweets['text'].apply(removeMentions)
-tweets['text'] = tweets['text'].apply(removePunctuation)
-tweets['text'] = tweets['text'].apply(removeNumbers)
-tweets['text'] = tweets['text'].apply(lowerCase)
+#tweets['text'] = tweets['text'].apply(removeLinks)
+#tweets['text'] = tweets['text'].apply(removeMentions)
+#tweets['text'] = tweets['text'].apply(removePunctuation)
+#tweets['text'] = tweets['text'].apply(removeNumbers)
+#tweets['text'] = tweets['text'].apply(lowerCase)
 #tweets['text'] = tweets['text'].apply(stem)
 tweets['text'] = tweets['text'].apply(listHashtags)
 print("lemmatize")
@@ -152,7 +152,7 @@ la regex permet de garder aussi les hashtags dans le passage dans countVectorize
 maxFeatures = 15
 vectorizer = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',stop_words = list_stopwords,max_features = maxFeatures )
 
-tokenizer = vectorizer.build_tokenizer()
+tokenizer = vectorizer.build_analyzer()
 
 
 '''
@@ -196,7 +196,7 @@ print(tfidfMatrix.toarray())
 
 
 
-
+print(list_stopwords)
 
 
 cursor.close()
