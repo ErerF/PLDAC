@@ -118,12 +118,18 @@ def plotHistogram(counter,maxNbFeatures):
     plt.xlabel('Nombre de fois que la feature a ete ecrite')
     plt.show()
     
-#password :
-#pldac
-#root
-cnx = mysql.connector.connect(user='root', password='pldac',
-                              host='127.0.0.1',
-                              database='pldac')
+    
+    
+f=open("database_info.json")
+db_info=json.load(f)
+u=db_info["user"]
+pwd=db_info["pwd"]
+h=db_info["host"]
+db=db_info["database"] 
+    
+cnx = mysql.connector.connect(user=u, password=pwd,
+                              host=h,
+                              database=db)
 cursor = cnx.cursor()
 cursor.execute("select text from tweets_0415_0423 where lang ='fr' LIMIT 1000000")
 rows = cursor.fetchall()
