@@ -64,9 +64,12 @@ def plotHistogramMostCommonFeatures(counter,maxNbFeatures):
     
     
 ''' Creation de la connection à la BD et recuperation des donnees '''
-#password :
-#pldac ou root
-cnxman = CNXManager('root','root','pldac')
+f=open("database_info.json")
+db_info=json.load(f)
+u=db_info["user"]
+pwd=db_info["pwd"]
+db=db_info["database"] 
+cnxman = CNXManager(u,pwd,db)
 rows = cnxman.executeSelectQuery("select text from tweets_0415_0423 where lang ='fr' LIMIT 1000000")
 
 tweets = pd.DataFrame(rows, columns=cnxman.cursor.column_names)
