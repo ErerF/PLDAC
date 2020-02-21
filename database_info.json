@@ -1,6 +1,6 @@
 {
 	"user":"root",
 	"pwd":"pldac",
-	"host":"127.0.0.1"
-	"database"="pldac"
+	"host":"127.0.0.1",
+	"database":"pldac"
 }
