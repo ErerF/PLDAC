@@ -119,7 +119,6 @@ class Preprocesser1(preprocesserGeneral):
         #tweets['text'] = tweets['text'].apply(lowerCase)
         #tweets['text'] = tweets['text'].apply(stem)
         tweets= tweets.apply(self.listHashtags)
-        print("lemmatize")
         #tweets['text'] = tweets['text'].apply(lemmatize))
        
         return tweets

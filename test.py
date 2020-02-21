@@ -30,7 +30,7 @@ from nltk.corpus import stopwords
 list_stopwords = stopwords.words('french')
 list_stopwords.extend(['rt','être','avoir','voter','faire'])
 
-
+print("aaa")
 def termFrequencyAll(tweets,tokenizer,list_stopwords):
     countTerm = Counter()
     for tweet in tweets:
@@ -70,7 +70,7 @@ u=db_info["user"]
 pwd=db_info["pwd"]
 db=db_info["database"] 
 cnxman = CNXManager(u,pwd,db)
-rows = cnxman.executeSelectQuery("select text from tweets_0415_0423 where lang ='fr' LIMIT 1000000")
+rows = cnxman.executeSelectQuery("select text from tweets_0415_0423 where lang ='fr' LIMIT 1000")
 
 tweets = pd.DataFrame(rows, columns=cnxman.cursor.column_names)
 pd.options.display.max_colwidth = 1000
@@ -80,7 +80,6 @@ print(tweets)
 ''' Choix du preprocesseur'''
 pp = Preprocesser1()
 tweets['text'] = pp.preprocessing(tweets['text'])
-
 print(tweets)
 
 
