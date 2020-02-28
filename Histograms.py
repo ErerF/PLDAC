@@ -16,7 +16,7 @@ temp = []
 
 entropie = np.array([float(i) for i in entropie])
 
-nb= 15
+nb= 50
 x = np.linspace(0,5,nb,dtype=float)
 y = []
 print(len(np.where(entropie >= 0)[0]))
@@ -24,12 +24,13 @@ for i in range(nb-1):
     y.append(len(np.where(np.logical_and(entropie >= x[i] , entropie <= x[i+1]))[0]))
 print(x)
 print(y)
+plt.figure(figsize=(20,10))
 plt.hist(entropie,x)
 plt.title("entropie des utilisateurs")
 plt.ylabel("Nombre d'utilisateurs")
 plt.xlabel("Entropie")
-plt.show()
-plt.savefig('./Images/entropieUtilisateurs.png')
+#plt.show()
+plt.savefig('./Images/entropieUtilisateurs')
 
 hashtags = pd.read_sql_query(
     "select hashtags,frequency from dict_hashtags", engine)
@@ -45,5 +46,5 @@ plt.xticks(rotation=90)
 plt.title("50 hashtags les plus utilisés")
 plt.xlabel("Hashtags")
 plt.ylabel("Nombre de fois utilisées")
-plt.show()
-plt.savefig('./Images/topHashtags.png')
+#plt.show()
+plt.savefig('./Images/topHashtags')
