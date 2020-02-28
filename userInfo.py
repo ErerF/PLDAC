@@ -72,6 +72,12 @@ users['grpPolitique'] = np.array(("empty"))
 users['hashtags'] = users['hashtags'].apply(str)
 users['grpPolitique'] = users['grpPolitique'].apply(str)
 
+def regroupementHashtags(hashtags):
+    return hashtags
+
+def calculEntropie(hashtags):
+    return hashtags
+
 for index,user in users.iterrows():
     userTweets = tweets.loc[tweets['user_id'] == user['user_id']]
     empty = False
@@ -89,19 +95,7 @@ for index,user in users.iterrows():
         Clustering qui permettrait de mieux faire cela ?'''
         #for hashtag in hashtags:
         users.at[index,'hashtags'] = ";".join(hashtags)
-        hashtags_threshold = len(hashtags) / 3
-        if len(set(melenchon_list) & set(hashtags)) >= hashtags_threshold:
-            users.at[index,'grpPolitique'] = "FI"
-        elif len(set(macron_list) & set(hashtags)) >= hashtags_threshold:
-            users.at[index,'grpPolitique'] = "LREM"
-        elif len(set(fillon_list) & set(hashtags)) >= hashtags_threshold:
-            users.at[index,'grpPolitique'] = "LR"
-        elif len(set(lepen_list) & set(hashtags)) >= hashtags_threshold:
-            users.at[index,'grpPolitique'] = "FN"
-        elif len(set(hamon_list) & set(hashtags)) >= hashtags_threshold:
-            users.at[index,'grpPolitique'] = "PS"
-        else:
-            users.at[index,'grpPolitique'] = "UNK"
+        #calcul de l'entropie
         print(users.at[index,'grpPolitique'])
         print(users.at[index,'hashtags'] )
 

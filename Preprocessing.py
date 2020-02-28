@@ -24,6 +24,12 @@ nlp = spacy.load('fr_core_news_sm')
 from nltk.corpus import stopwords
 list_stopwords = stopwords.words('french')
 
+macron = set(("#macron","#enmarche","#macronbercy","#jevotemacron","#macronpresident","#bercy","#teammacron"))
+melenchon = set(("#jevotemelenchon","#lafranceinsoumise","#aperoinsoumis","#aperosinsoumis","#insoumis","#melenchon","#erepublique","#avenirencommun","#jlm","#jl","#jlmdijon","#jlmelenchon","#jlmhologramme","#keepcalmandvotemelenchon","#laforcedupeuple","#penicheinsoumise","#feuillederoutefi"))
+hamon = set(("#benoithamon","#jevotehamon","#hamon","#coeurbattant","#hamontour","#futurdesirable","#fairebattrelecoeurdelafrance","#revenuuniversel"))
+lepen = set(("#fn","#mlp","#marine","#jevotemarine","#marineaparis","#aunomdupeuple","#marinepournosanimaux","#marinepresidente","#marseillemlp","#perpignanmlp","#avecmarine","#lasecuritecestmarine"))
+fillon = set(("#jevotefillon","fillonlille","#fillonmontpellier","#fillonpresident","#fillonnice","#fillonpresident","#fillon","#jevotefillondeslepremiertour","#senscommun","#lr"))
+
 
 ''' 
 Definition des objects permettant de preprocesser les tweets
@@ -87,7 +93,8 @@ class preprocesserGeneral():
     
     
     def listHashtags(self,tweet):
-        hashtags = re.findall(r'#\S+',tweet)
+        hashtag_re = re.compile("(?:^|\s)([#]{1}\w+)",re.UNICODE)
+        hashtags = hashtag_re.findall(tweet)
         return ' '.join(hashtags)
     
     def stripAccents(self,tweet):
@@ -109,21 +116,41 @@ class preprocesserGeneral():
         return stopwordsInit
     '''
 
+
+
+    def grpHashtag(self,tweet):
+        h = tweet.split(" ")
+        for i in range(len(h)):
+            if h[i] in macron:
+                h[i] = "#macron"
+            elif h[i] in melenchon:
+                h[i] = "#melenchon"
+            elif h[i] in hamon:
+                h[i] = "#hamon"
+            elif h[i] in lepen:
+                h[i] = "#lepen"
+            elif h[i] in fillon:
+                h[i] = "#fillon"
+        tweet = " ".join(h)
+        return tweet
+
 class Preprocesser1(preprocesserGeneral):
     
     def preprocessing(self,tweets):
         #tweets['text'] = tweets['text'].apply(removeLinks)
         #tweets['text'] = tweets['text'].apply(removeMentions)
         #tweets['text'] = tweets['text'].apply(removePunctuation)
-        #tweets['text'] = tweets['text'].apply(removeNumbers)
-        #tweets['text'] = tweets['text'].apply(lowerCase)
+        tweets = tweets.apply(self.removeNumbers)
+        tweets = tweets.apply(self.lowerCase)
         #tweets['text'] = tweets['text'].apply(stem)
         tweets= tweets.apply(self.listHashtags)
         #tweets['text'] = tweets['text'].apply(lemmatize))
        
         return tweets
         
-  
+    def grpHashtags(self,tweets):
+        return tweets.apply(self.grpHashtag)
+
 class Preprocesser2(preprocesserGeneral):
     
     def preprocessing(self,tweets):
