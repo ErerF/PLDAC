@@ -13,29 +13,71 @@ Sortie: (partition, modularite) ou la modularite est maximal
 """
 import networkx as nx
 import matplotlib.pyplot as plt
+from collections import Counter
+import json
+import mysql.connector
 
-#recuperer les listes de noeuds et d'arcs
-nodes=[1,2,3,4]  #nodes=load()
-#edges=[(1,2,2),(1,3,1),(2,3,3)]  #edges=load()
-edges=[(1,2),(1,3),(2,3)]
-
+#recuperer les noeuds et les arcs
+def nodes_edges():
+    f=open("database_info.json")
+    db_info=json.load(f)
+    u=db_info["user"]
+    pwd=db_info["pwd"]
+    h=db_info["host"]
+    db=db_info["database"] 
+        
+    cnx = mysql.connector.connect(user=u, password=pwd, host=h, database=db)
+    cursor = cnx.cursor()
+    #nodes=set()
+    edges=[]
+    
+    sql="SELECT source_user_id,target_user_id FROM tweets.user_mentions_0415_0423 LIMIT 1000;"
+    try:
+        cursor.execute(sql)
+        edges = cursor.fetchall()
+    except:
+        print("Error: unable to fetch data")
+    cursor.close()
+    cnx.close()
+    """
+    for e in edges:
+        nodes.add(e[0])
+        nodes.add(e[1])
+    """
+    return edges
+      
 #construiure le graphe
-#g=nx.DiGraph()
-g=nx.Graph()
-g.add_nodes_from(nodes)
-#g.add_weighted_edges_from(edges)
-g.add_edges_from(edges)
-#2 facons a dessiner:
-#1.
-#nx.draw_networkx(g)
-#2.
-"""
-nx.draw(g)
-#plt.savefig("louvain.png")  #enregistrer dans un fichier
-plt.show()
-"""
+def create_graph(edges):
+    ct=Counter(edges)
+    l=[]
+    g=nx.DiGraph()
+    for k in ct.keys():
+        l.append((k[0],k[1],ct[k]))    
+    g.add_weighted_edges_from(l)
+    
+    return g
+    
+def draw_graph(g):
+    #nx.draw_networkx_edge_labels(g,nx.spring_layout(g))
+    #nx.draw_networkx(g)
+    pos=nx.spring_layout(g)
+    nx.draw(g, pos, alpha=0.5)
+    plt.show()
 
-#Louvain: https://pypi.org/project/python-louvain/
+
+edges=nodes_edges()
+#g=create_graph(edges)
+#draw_graph(g)
+
+
+ct=Counter(edges)
+l=[]
+g=nx.Graph()
+for k in ct.keys():
+    l.append((k[0],k[1],ct[k]))
+#g.add_nodes_from(nodes)
+g.add_weighted_edges_from(l)
+
 import community
 partition=community.best_partition(g)
 size = float(len(set(partition.values())))
@@ -50,4 +92,15 @@ for com in set(partition.values()) :
 
 
 nx.draw_networkx_edges(g, pos, alpha=0.5)
+plt.savefig("Images\louvain_first1000.png")
 plt.show()
+
+"""
+#2 facons a dessiner:
+#1.
+#nx.draw_networkx(g)
+#2.
+nx.draw(g)
+#plt.savefig("louvain.png")  #enregistrer dans un fichier
+plt.show()
+"""
