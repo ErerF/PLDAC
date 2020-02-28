@@ -18,7 +18,7 @@ engine = create_engine("mysql+mysqlconnector://root:root@127.0.0.1/pldac")
 print("fin query tweet")
 start = time.time()
 users = pd.read_sql_query(
-    "select user_id,followers_count,friends_count from users_0415_0423 where lang ='fr'  limit 50000", engine)
+    "select user_id,f ollowers_count,friends_count from users_0415_0423 where lang ='fr'  limit 150000", engine)
 
 
 
