@@ -23,13 +23,19 @@ nlp = spacy.load('fr_core_news_sm')
 
 from nltk.corpus import stopwords
 list_stopwords = stopwords.words('french')
-
+'''
 macron = set(("#macron","#enmarche","#macronbercy","#jevotemacron","#macronpresident","#bercy","#teammacron"))
 melenchon = set(("#jevotemelenchon","#lafranceinsoumise","#aperoinsoumis","#aperosinsoumis","#insoumis","#melenchon","#erepublique","#avenirencommun","#jlm","#jl","#jlmdijon","#jlmelenchon","#jlmhologramme","#keepcalmandvotemelenchon","#laforcedupeuple","#penicheinsoumise","#feuillederoutefi"))
 hamon = set(("#benoithamon","#jevotehamon","#hamon","#coeurbattant","#hamontour","#futurdesirable","#fairebattrelecoeurdelafrance","#revenuuniversel"))
 lepen = set(("#fn","#mlp","#marine","#jevotemarine","#marineaparis","#aunomdupeuple","#marinepournosanimaux","#marinepresidente","#marseillemlp","#perpignanmlp","#avecmarine","#lasecuritecestmarine"))
 fillon = set(("#jevotefillon","fillonlille","#fillonmontpellier","#fillonpresident","#fillonnice","#fillonpresident","#fillon","#jevotefillondeslepremiertour","#senscommun","#lr"))
+'''
 
+macron = set(("#macron","#macrno","#macro","#macrob","#macrin","#"))
+hamon = set(("#hammon","#hammond","#hamn","#hamo","#hamo","#hamob","#hamobpresident","#hamom","#hamon","#hamonb","#hamono","#hamonpresident"))
+melenchon = set(("#melenchon","#melanchon","#melechon","#mélenchon","#mélanchon","#melechon","#jlm","#jlcm","#jlmo","#jlmelenchon"))
+lepen = set(("#marine","#marin","#lepen","#lepe","#lepan","#lepem"))
+fillon = set(("#fillon","#filln","#fillo","#fillob","#fillom","#fillojn"))
 
 ''' 
 Definition des objects permettant de preprocesser les tweets
@@ -166,3 +172,19 @@ class Preprocesser2(preprocesserGeneral):
        
         return tweets
               
+def preprocess(tweets,links = False,mentions = False,punctuation = False,numbers = False,lower = False,stemming = False,hashtags = False):
+    if links:
+        tweets = tweets.apply(removeLinks)
+    if mentions:
+        tweets = tweets.apply(removeMentions)
+    if punctuation:
+        tweets = tweets.apply(removePunctuation)
+    if numbers:
+        tweets = tweets.apply(removeNumbers)
+    if lower:
+        tweets = tweets.apply(lowerCase)
+    if stemming:
+        tweets = tweets.apply(stem)
+    if hashtags:
+        tweets = tweets.apply(listHashtags)
+    return tweets

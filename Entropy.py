@@ -18,7 +18,7 @@ engine = create_engine("mysql+mysqlconnector://root:root@127.0.0.1/pldac")
 print("fin query tweet")
 start = time.time()
 users = pd.read_sql_query(
-    "select user_id,f ollowers_count,friends_count from users_0415_0423 where lang ='fr'  limit 150000", engine)
+    "select user_id,followers_count,friends_count from users_0415_0423 where lang ='fr'  limit 100000 offset 300000", engine)
 
 
 
@@ -42,14 +42,17 @@ vectorizer2 = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',max_features = m
 
 print('Iteration sur les users')
 indxDelete = []
+cpt = 0
+longueur = len(users )
 for index,user in users.iterrows():
     #userTweets = tweets.loc[tweets['user_id'] == user['user_id']]
-
+    cpt = cpt + 1
+    if cpt % 100 == 0:
+        print(str(cpt) + " sur " + str(longueur))
     userTweets = pd.read_sql_query(
         "select user_id, text from tweets_0415_0423 where user_id =  " +str(user['user_id']), engine)
     nbTweets = userTweets.shape[0]
     if nbTweets >= 100:
-        print(nbTweets)
         try:
             users.at[index,'nbTweets'] = nbTweets
             hashtags = pp.preprocessing(userTweets['text'])
@@ -57,12 +60,12 @@ for index,user in users.iterrows():
             countMatrix = vectorizer.fit_transform(hashtags)
             hashtags = vectorizer.get_feature_names()
             frequency = np.asarray(countMatrix.sum(axis=0))
-            if len(hashtags) > 0 and np.sum(frequency) >= 10:
+            if len(hashtags) > 0 and np.sum(frequency) >= 1:
                 listt = [ str((h,f)) for h,f in zip(hashtags,frequency[0])]
 
                 users.at[index, 'hashtags1gram'] = " ".join(listt)
                 users.at[index, 'frequence1'] = " ".join(map(str, frequency))
-                print(users.at[index, 'hashtags1gram'] )
+                #print(users.at[index, 'hashtags1gram'] )
                 total = frequency.sum()
                 proba = frequency / total
                 entropy = - np.sum( proba * np.log2(proba))
@@ -86,7 +89,7 @@ for index,user in users.iterrows():
             indxDelete.append(index)
 users.drop(users.index[indxDelete])
 users =   users[users['nbTweets'] >= 100]
-print(users['nbTweets'] )
+
 
 print("Temps pris en secondes : " + str(time.time() - start))
-users.to_sql("entropie_tweets", engine, "pldac", if_exists='replace')
+users.to_sql("entropie_tweets2", engine, "pldac", if_exists='append')
