@@ -17,7 +17,6 @@ vectorizer = CountVectorizer(token_pattern= r'(?u)#?\b\w\w+\b',strip_accents='un
 
 start = time.time()
 
-
 tweets = pd.read_sql_query(
     "select text from tweets_0415_0423 where lang ='fr'", engine)
 hashtags = pp.preprocessing(tweets['text'])
