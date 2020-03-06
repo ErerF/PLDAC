@@ -15,7 +15,6 @@ offset_limit = 10000
 pp = Preprocesser1()
 
 
-
 start = time.time()
 hashtags = pd.read_sql_query(
     "select hashtags,frequency from dict_hashtags ", engine)
