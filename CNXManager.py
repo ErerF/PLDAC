@@ -7,7 +7,6 @@ Created on Fri Feb 14 13:02:27 2020
 @author: arnaud
 """
 
-
 '''
 Objet qui cree la connection a la base de donnees
 Qui effectue les requetes et renvoie le resultat
