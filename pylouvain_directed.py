@@ -264,7 +264,7 @@ partition={}
 for i in range(len(first_not_empty)):
     for n in first_not_empty[i]:
         partition[p.dict_index_node[n]]=i
-#print(partition)
+print(partition)
 
 
 g=nx.DiGraph(p.edges)  
@@ -273,21 +273,21 @@ pos = nx.spring_layout(g)
 count = 0.
 for com in set(partition.values()) :
     count = count + 1.
-    """
+
+"""
     list_nodes = [nodes for nodes in partition.keys()
                                 if partition[nodes] == com]
     nx.draw_networkx_nodes(g, pos, first_not_empty, node_size = 20,
                                 node_color = str(count / size))
-    """
+"""
+
     nx.draw_networkx_nodes(g, pos, first_not_empty[int(count-1)], node_size = 20, node_color = str(count / size))
 
 nx.draw_networkx_edges(g, pos, alpha=0.5)
 #plt.savefig("Images\louvain_first1000_directed.png")
 plt.show()  
 
-    
-    
-    
+
     
     
     
