@@ -5,9 +5,11 @@ import pandas as pd
 import string
 import matplotlib.pyplot as plt
 import numpy as np
-
 from sqlalchemy import create_engine
 
+'''
+Créer les histogrammes sur l'entropie
+'''
 engine = create_engine("mysql+mysqlconnector://root:root@127.0.0.1/pldac")
 hashtags = pd.read_sql_query(
     "select entropie1hashtags from entropie_tweets2 where frequence1 != ''", engine)
@@ -94,7 +96,7 @@ print(x)
 print(y)
 plt.figure(figsize=(20,10))
 plt.scatter(entropie,followers)
-plt.title("followers selon l'entropie")
+plt.title("followers selon l'entropie  ")
 plt.ylabel("Nombre de followers")
 plt.xlabel("Entropie")
 plt.yscale("log")
