@@ -36,7 +36,7 @@ pd.set_option('display.max_colwidth',-1)
 
 def analyseSelonEntropie(entropie):
 
-    nomDossier = 'Dossier' + str(entropie)
+    nomDossier = 'DossierEntre2.5_et_3.6'
     try:
         Path(nomDossier).mkdir()
     except:
@@ -45,7 +45,7 @@ def analyseSelonEntropie(entropie):
 
     engine = create_engine("mysql+mysqlconnector://root:root@127.0.0.1/pldac")
     users = pd.read_sql_query(
-        "select user_id,followers_count,friends_count,nbTweets,hashtags1gram,frequence1,entropie1hashtags from entropie_tweets2 where entropie1hashtags != '' and entropie1hashtags  <= " + str(entropie) +"limit 10000000", engine)
+        "select user_id,followers_count,friends_count,nbTweets,hashtags1gram,frequence1,entropie1hashtags from entropie_tweets2 where entropie1hashtags != '' and entropie1hashtags <= 3.6 and entropie1hashtags  >= " + str(entropie) +"limit 10000000", engine)
     entropie = users['entropie1hashtags'].values
     temp = []
     '''
@@ -107,6 +107,30 @@ def analyseSelonEntropie(entropie):
     plt.ylabel("Longueur moyenne d'un tweet")
     plt.draw()
     chemin = nomDossier+"/longueur_selon_entropie.png"
+    plt.savefig(chemin)
+    plt.show()
+
+    plt.figure(window)
+    window += 100
+    entro = users['entropie1hashtags'].values
+    entro= np.array([float(i) for i in entro])
+    plt.scatter(entro,users['nbRetweetsMoyen'])
+    plt.title("nb de retweet moyen selon l'entropie")
+    plt.xlabel("Entropie")
+    plt.ylabel("nb de retweet moyen")
+    plt.draw()
+    chemin = nomDossier+"/NbRetweet_selon_entropie.png"
+    plt.savefig(chemin)
+    plt.show()
+
+    plt.figure(window)
+    window += 100
+    plt.scatter(users['ratioLienParTweet'],users['nbRetweetsMoyen'])
+    plt.title("nb de retweet moyen selon le ratio de lien/tweet")
+    plt.xlabel("ratio presence lien dans tweet")
+    plt.ylabel("nb de retweet moyen")
+    plt.draw()
+    chemin = nomDossier+"/NbRetweet_selon_presence_lien.png"
     plt.savefig(chemin)
     plt.show()
     print("done")
