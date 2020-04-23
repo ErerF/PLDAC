@@ -149,13 +149,13 @@ class Preprocesser1(preprocesserGeneral):
         tweets = tweets.apply(self.removeNumbers)
         tweets = tweets.apply(self.lowerCase)
         #tweets['text'] = tweets['text'].apply(stem)
+
+        tweets = tweets.apply(self.grpHashtag)
         tweets= tweets.apply(self.listHashtags)
         #tweets['text'] = tweets['text'].apply(lemmatize))
        
         return tweets
-        
-    def grpHashtags(self,tweets):
-        return tweets.apply(self.grpHashtag)
+
 
 class Preprocesser2(preprocesserGeneral):
     

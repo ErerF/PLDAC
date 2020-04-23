@@ -12,7 +12,7 @@ Créer les histogrammes sur l'entropie
 '''
 engine = create_engine("mysql+mysqlconnector://root:root@127.0.0.1/pldac")
 hashtags = pd.read_sql_query(
-    "select entropie1hashtags from entropie_tweets2 where frequence1 != ''", engine)
+    "select entropie1hashtags from entropie_clusters where frequence1 != ''", engine)
 entropie = hashtags['entropie1hashtags'].values
 temp = []
 
@@ -32,7 +32,7 @@ plt.title("entropie des utilisateurs")
 plt.ylabel("Nombre d'utilisateurs")
 plt.xlabel("Entropie")
 #plt.show()
-plt.savefig('./Images/entropieUtilisateurs2')
+plt.savefig('./Images/entropieClusteurs')
 
 hashtags = pd.read_sql_query(
     "select hashtags,frequency from dict_hashtags", engine)
