@@ -1,0 +1,61 @@
+in Louvain_Di()
+out PyLouvain() 12.201375722885132
+cycle  0
+  in first_phase()
+  out first_phase() 15753.2134847641
+  in second_phase()
+  out second_phase() 5.0514817237854
+cycle  1
+  in first_phase()
+  out first_phase() 119.69266676902771
+  in second_phase()
+  out second_phase() 0.5022432804107666
+cycle  2
+  in first_phase()
+  out first_phase() 2.196105480194092
+  in second_phase()
+  out second_phase() 0.4079127311706543
+cycle  3
+  in first_phase()
+  out first_phase() 0.8253231048583984
+  in second_phase()
+  out second_phase() 0.04980134963989258
+cycle  4
+  in first_phase()
+  out first_phase() 0.8357174396514893
+  in second_phase()
+  out second_phase() 0.05185842514038086
+cycle  5
+  in first_phase()
+  out first_phase() 0.27925896644592285
+  in second_phase()
+  out second_phase() 0.3014981746673584
+cycle  6
+  in first_phase()
+  out first_phase() 0.285266637802124
+============================================
+in Louvain_Undi()
+out PyLouvain() 15.014809370040894
+cycle  0
+  in first_phase()
+  out first_phase() 20706.26426410675
+  in second_phase()
+  out second_phase() 3.030885934829712
+cycle  1
+  in first_phase()
+  out first_phase() 312.7219166755676
+  in second_phase()
+  out second_phase() 0.18352699279785156
+cycle  2
+  in first_phase()
+  out first_phase() 2.7964816093444824
+  in second_phase()
+  out second_phase() 0.47672200202941895
+cycle  3
+  in first_phase()
+  out first_phase() 0.95345139503479
+  in second_phase()
+  out second_phase() 0.03694009780883789
+cycle  4
+  in first_phase()
+  out first_phase() 0.3101801872253418
